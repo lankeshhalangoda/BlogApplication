@@ -1,0 +1,100 @@
+﻿@model IEnumerable<BlogApplication.Models.BlogPost>
+
+@{
+    ViewData["Title"] = "Published Blog Posts";
+}
+
+@{
+    <form>
+        @Html.AntiForgeryToken()
+    </form>
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center">
+        <strong>No published posts yet.</strong> Please check back later or create a new post.
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Image</th>
+                <th>Author</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var post in Model)
+            {
+                <tr id="post-@post.Id">
+                    <td>@post.Title</td>
+                    <td><img src="@post.ImagePath" alt="Image" style="width: 100px;" /></td>
+                    <td>@post.AuthorName</td>
+                    <td><span class="badge bg-success">@post.Status</span></td>
+                    <td>
+                        <a href="@Url.Action("View", "Blog", new { id = post.Id })" class="btn btn-info btn-sm">
+                            <i class="bi bi-eye"></i> View
+                        </a>
+
+                        @if (post.Status == "Published" || post.Status == "Rejected")
+                        {
+                            <button class="btn btn-warning btn-sm revert-btn" data-id="@post.Id">
+                                <i class="bi bi-arrow-counterclockwise"></i> Revert to Draft
+                            </button>
+                        }
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).on('click', '.revert-btn', function () {
+            var postId = $(this).data("id");
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to revert this post to Draft!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, revert it!',
+                cancelButtonText: 'No, keep it as is'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("RevertToDraft", "Blog")',
+                        type: 'POST',
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        data: { id: postId },
+                        success: function (response) {
+                            $("#post-" + postId).find(".revert-btn").prop('disabled', true);
+                            location.reload();
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An error occurred while reverting the post.',
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

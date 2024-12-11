@@ -1,0 +1,143 @@
+﻿@model IEnumerable<BlogApplication.Models.BlogPost>
+
+@{
+    ViewData["Title"] = "Draft Blog Posts";
+}
+
+@{
+    <form>
+        @Html.AntiForgeryToken()
+    </form>
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center">
+        <strong>No draft posts yet.</strong> Please check back later or create a new post.
+    </div>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Image</th>
+                <th>Author</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var post in Model)
+            {
+                <tr id="post-@post.Id">
+                    <td>@post.Title</td>
+                    <td><img src="@post.ImagePath" alt="Image" style="width: 100px;" /></td>
+                    <td>@post.AuthorName</td>
+                    <td><span class="badge bg-secondary">@post.Status</span></td>
+                    <td>
+                        @if (post.Status == "Draft")
+                        {
+                            <a href="@Url.Action("View", "Blog", new { id = post.Id })" class="btn btn-info btn-sm">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                            <button class="btn btn-success publish-btn btn-sm" data-id="@post.Id">
+                                <i class="bi bi-check-circle"></i> Publish
+                            </button>
+                            <button class="btn btn-danger reject-btn btn-sm" data-id="@post.Id">
+                                <i class="bi bi-x-circle"></i> Reject
+                            </button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-secondary btn-sm" disabled>
+                                <i class="bi bi-lock"></i> Already Published/Rejected
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).on('click', '.publish-btn', function () {
+            var postId = $(this).data("id");
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to publish this post!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, publish it!',
+                cancelButtonText: 'No, keep it as draft'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("Publish", "Blog")',
+                        type: 'POST',
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        data: { id: postId },
+                        success: function (response) {
+                            $("#post-" + postId).find(".publish-btn").prop('disabled', true);
+                            $("#post-" + postId).find(".reject-btn").prop('disabled', true);
+                            location.reload();
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An error occurred while publishing the post.',
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+        $(document).on('click', '.reject-btn', function () {
+            var postId = $(this).data("id");
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to reject this post!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, reject it!',
+                cancelButtonText: 'No, keep it as draft'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("Reject", "Blog")',
+                        type: 'POST',
+                        headers: {
+                            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        data: { id: postId },
+                        success: function (response) {
+                            $("#post-" + postId).find(".publish-btn").prop('disabled', true);
+                            $("#post-" + postId).find(".reject-btn").prop('disabled', true);
+                            location.reload();
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'An error occurred while rejecting the post.',
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

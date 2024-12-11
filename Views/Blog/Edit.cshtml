@@ -1,0 +1,76 @@
+﻿@model BlogApplication.Models.BlogPost
+
+@{
+    ViewData["Title"] = "Edit Blog Posts";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" enctype="multipart/form-data" method="post">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <input type="hidden" id="ImagePath" name="ImagePath" value="@Model.ImagePath" />
+
+    <div class="form-group">
+        <label for="Title">Title</label>
+        <input type="text" class="form-control" id="Title" name="Title" value="@Model.Title" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Image">Replace Image</label>
+        <input type="file" class="form-control" id="newImage" />
+    </div>
+    <div class="form-group">
+        <label>Current Image:</label>
+        <img id="previewImage" src="@Model.ImagePath" alt="Current Image" style="width: 100px;" />
+    </div>
+
+    <div class="form-group">
+        <label for="Description">Description</label>
+        <textarea class="form-control rich-text-editor" id="Description" name="Description">@Model.Description</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.10.0/tinymce.min.js"></script>
+<script>
+    tinymce.init({
+        selector: '.rich-text-editor',
+        plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+        toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link image',
+        menubar: false
+    });
+
+    $(document).ready(function () {
+        $('#newImage').on('change', function () {
+            var file = this.files[0];
+            if (file) {
+                var formData = new FormData();
+                formData.append('file', file);
+
+                $.ajax({
+                    url: '/Blog/UploadImage',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            $('#ImagePath').val(response.imagePath);
+
+                            $('#previewImage').attr('src', response.imagePath);
+                        } else {
+                            alert('Image upload failed: ' + response.message);
+                        }
+                    },
+                    error: function () {
+                        alert('An error occurred while uploading the image.');
+                    }
+                });
+            }
+        });
+    });
+</script>

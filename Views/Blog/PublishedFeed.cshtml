@@ -1,0 +1,43 @@
+﻿@model IEnumerable<BlogApplication.Models.BlogPost>
+
+@{
+    ViewData["Title"] = "Published Feed";
+}
+
+<div class="container my-5">
+
+    <h2>@ViewData["Title"]</h2>
+
+
+    @if (!Model.Any()) 
+    {
+        <div class="alert alert-info text-center">
+            <strong>No posts yet.</strong> Please check back later or create a new post.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var post in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="@post.ImagePath" class="card-img-top" alt="Post Image" style="height: 200px; object-fit: cover;">
+
+                        <div class="card-body">
+                            <h5 class="card-title">@post.Title</h5>
+                            <p class="card-text">
+                                @Html.Raw(post.Description.Length > 150 ? post.Description.Substring(0, 150) + "..." : post.Description)
+                            </p>
+                            <p class="text-muted">
+                                <small>By @post.AuthorName on @post.CreatedAt?.ToString("MMM dd, yyyy hh:mm tt")</small>
+                            </p>
+
+                            <a href="@Url.Action("View", "Blog", new { id = post.Id })" class="btn btn-primary">View</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

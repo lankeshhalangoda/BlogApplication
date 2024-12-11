@@ -1,0 +1,67 @@
+﻿@{
+    Layout = "_LoginRegisterLayout";
+    ViewData["Title"] = "Login";
+}
+
+<div class="card">
+    <h2 class="text-center mb-4">@ViewData["Title"]</h2>
+
+    <form asp-action="Login" method="post">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" name="email" id="email" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" name="password" id="password" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="role" class="form-label">Role</label>
+            <select name="role" id="role" class="form-select" required>
+                <option value="Admin">Admin</option>
+                <option value="Editor">Editor</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100">Login</button>
+
+        <div class="text-center mt-3">
+            <a href="@Url.Action("Register", "Account")">Don't have an account? Register here</a>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <text>
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: '@TempData["SuccessMessage"]',
+                    showConfirmButton: false,
+                    toast: true,
+                    timer: 3000
+                });
+        </text>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <text>
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: '@TempData["ErrorMessage"]',
+                    showConfirmButton: false,
+                    toast: true,
+                    timer: 3000
+                });
+        </text>
+    }
+</script>
+
+

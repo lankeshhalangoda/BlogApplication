@@ -1,0 +1,86 @@
+﻿@model IEnumerable<BlogApplication.Models.ApplicationUser>
+
+@{
+    ViewData["Title"] = "List Users";
+}
+
+@{
+    <form>
+        @Html.AntiForgeryToken()
+    </form>
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FullName</td>
+                <td>@user.Email</td>
+                <td>@user.Role</td>
+                <td>
+                    <a asp-action="EditUser" asp-route-id="@user.Id" class="btn btn-warning btn-sm">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
+
+                    <button class="btn btn-danger btn-sm delete-btn" data-id="@user.Id">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+        }
+
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).on('click', '.delete-btn', function () {
+            var userId = $(this).data("id");
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to delete this user!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var form = $('<form>', {
+                        method: 'POST',
+                        action: '/Admin/DeleteUser'
+                    }).append($('<input>', {
+                        type: 'hidden',
+                        name: 'id',
+                        value: userId
+                    }));
+
+                    var token = $('input[name="__RequestVerificationToken"]').val();
+                    form.append($('<input>', {
+                        type: 'hidden',
+                        name: '__RequestVerificationToken',
+                        value: token
+                    }));
+
+                    $('body').append(form);
+                    form.submit();
+                }
+            });
+        });
+    </script>
+}
+

@@ -1,0 +1,50 @@
+﻿@model BlogApplication.Models.BlogPost
+
+@{
+    ViewData["Title"] = "Create Blog Post";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="Title">Title</label>
+        <input type="text" class="form-control" id="Title" asp-for="Title" required />
+    </div>
+
+    <div class="form-group">
+        <label for="Image">Image</label>
+        <input type="file" class="form-control" id="Image" name="Image" />
+    </div>
+
+    <div class="form-group">
+        <label for="Description">Description</label>
+        <textarea class="form-control rich-text-editor" id="Description" asp-for="Description" rows="10"></textarea>
+    </div>
+
+    <input type="hidden" asp-for="UserId" />
+
+    <button type="submit" class="btn btn-primary mt-2">Create</button>
+</form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/5.10.0/tinymce.min.js"></script>
+<script>
+    tinymce.init({
+        selector: '.rich-text-editor',
+        plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
+        toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link image',
+        menubar: false
+    });
+</script>

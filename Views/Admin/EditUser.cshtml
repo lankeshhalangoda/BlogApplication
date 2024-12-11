@@ -1,0 +1,40 @@
+﻿@using BlogApplication.Models
+@model BlogApplication.Models.EditUserViewModel
+
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post">
+    <input type="hidden" name="Id" value="@Model.Id" />
+    <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" name="FullName" class="form-control" value="@Model.FullName" required />
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="Email" class="form-control" value="@Model.Email" required />
+    </div>
+
+    <div class="form-group">
+        <label for="role">Role</label>
+        <select name="Role" id="role" class="form-control">
+            @foreach (var role in ViewBag.Roles as List<string>)
+            {
+                if (role == Model.Role)
+                {
+                    <option value="@role" selected>@role</option>
+                }
+                else
+                {
+                    <option value="@role">@role</option>
+                }
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Save Changes</button>
+</form>
