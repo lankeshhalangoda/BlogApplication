@@ -35,7 +35,7 @@ This is a simple CRUD blog application developed using **.NET 9** and **MS SQL S
 
 - **File Upload**: Allows users to upload banner images for their blog posts (only JPG, PNG, GIF allowed, up to 5MB in size).
 
-- **User-Friendly Frontend**: Built with **Bootstrap 4.0**, providing a clean, responsive design for both desktop and mobile devices.
+- **User-Friendly Frontend**: Built with **Bootstrap 4.0**, providing a clean, responsive design.
 
 ## Prerequisites
 
@@ -43,6 +43,7 @@ Before you can run the application, ensure the following are installed:
 
 1. **.NET 9 SDK**: You can download it from [here](https://dotnet.microsoft.com/download).
 2. **MS SQL Server**: Ensure you have MS SQL Server installed. You can use SQL Server Express for local development.
+3. **Bootstrap 4.6.0**: This application uses **Bootstrap 4.0** for responsive design, which is included by default in the project.
 
 ## Setup Instructions
 
@@ -68,7 +69,19 @@ git clone https://github.com/lankeshhalangoda/BlogApplication.git
 }
 ```
 
-### 4. Apply Database Migrations
+### 4. Install Dependencies
+
+Before running the application, you may need to restore the NuGet packages used in the project. To do this:
+
+#### Using NuGet Package Manager Console in Visual Studio:
+
+Open **Package Manager Console** in Visual Studio and run the following command:
+
+```powershell
+Restore
+```
+
+### 5. Apply Database Migrations
 
 To set up the database, run the migrations:
 
@@ -81,7 +94,7 @@ Update-Database
 
 This will create the necessary tables in your SQL Server database.
 
-### 5. Run the Application
+### 6. Run the Application
 
 - Press **F5** or **Ctrl+F5** to run the application (or click the https 'play' button).
 - The application will be available at `http://localhost:5000` by default.
